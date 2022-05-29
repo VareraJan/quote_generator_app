@@ -113,9 +113,9 @@ const Author = styled.div`
 const Button = styled.button`
   margin: 1em;
   background-color: silver;
-  height: calc((1vw+1vh)*3);
-  width: calc((1vw+1vh)*8);
-  font-size: calc((1vw+1vh)*2.5);
+  height: 1.5em;
+  width: 4em;
+  font-size: 1em;
   border: none;
   border-radius: 0.2em;
   &:hover {

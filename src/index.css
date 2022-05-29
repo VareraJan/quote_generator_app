@@ -10,5 +10,5 @@
 
 body {
   height: 100vh;
-  font-size: calc(var(--index)*1.1);
+  font-size: calc(var(--index)*0.9);
 }

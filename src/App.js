@@ -1,43 +1,76 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components'
+import Draggable from 'react-draggable';
+import Loading from './img/loading.svg';
 
 
 function App() {
   const [quotes, setQuotes] = useState([])
   const [quote, setQuote] = useState([])
-  console.log(quote);
+  const [coord, setCoord] = useState(JSON.parse(localStorage.getItem('coord')) || {x: 0, y: 0})
+  const [loading, setLoading] = useState(false)
+
   const randomQuote = () => {
     const index = Math.floor(Math.random() * (quotes.length + 1) )
     setQuote(quotes[index])
   }
   useEffect(() => {
+    setLoading(true)
     axios(process.env.REACT_APP_API)
-      .then(response => setQuotes(response.data))
+        .then(response => {
+          setLoading(false)
+          setQuotes(response.data)})
   }, [])
 
   useEffect(() => {
     randomQuote()
   }, [quotes])
 
+  const stopHandler = (e, data) => {
+    const newCoord = {x: data.x, y: data.y}
+    setCoord(newCoord)
+    localStorage.setItem('coord', JSON.stringify(newCoord))
+  }
+
   return (
-    <>
     <Container>
-      <Card dark>
-        <Author >
-         {`~ ${quote?.author || 'non Author'}`}
-        </Author>
-        <Text>
-          "{quote?.text}"
-        </Text>
-        <Button onClick={randomQuote}>Next</Button>
-      </Card>
+      {loading 
+        ? 
+        (<Draggable
+          defaultPosition={coord}
+        >
+          <Load />
+        </Draggable>) 
+        : 
+        (<Draggable
+          defaultPosition={coord}
+            onStop={stopHandler}
+          >
+            <Card dark>
+              <Author >
+              {`~ ${quote?.author || 'non Author'}`}
+              </Author>
+              <Text>
+                "{quote?.text}"
+              </Text>
+              <Button onClick={randomQuote}>Next</Button>
+            </Card>
+          </Draggable>)
+      }
+      
+      
     </Container>
-    </>
   );
 }
 
 export default App;
+
+const Load = styled.img.attrs({
+  src: Loading
+})`
+  width: 10em;
+`
 
 const Container = styled.div`
   display: flex;
@@ -55,6 +88,7 @@ const Card = styled.div`
   padding-top: 2em;
   padding-bottom: 0.5em;
   width: 20em;
+  cursor: pointer;
   background-color: ${props => props.dark ? 'black' : 'grey'};
   border-radius: 0.25em;
   &:hover {
